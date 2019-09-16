@@ -1,0 +1,135 @@
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - keys.yml
+  tasks:
+    - name: Provision instance
+      ec2:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        ec2_region: "{{ AWS_REGION }}"
+        instance_type: t2.micro
+        keypair: jenkins
+        image: ami-05c1fa8df71875112
+        volumes:
+          - device_name: /dev/sda1
+            snapshot: snap-055be9827a7c49642
+            volume_type: gp2
+            volume_size: 30
+            delete_on_termination: true
+        assign_public_ip: yes
+        vpc_subnet_id: subnet-13fab269
+        group: jenkins
+        wait: true
+        exact_count: 1
+        count_tag:
+          Name: ec2-linuxprod
+        instance_tags:
+          Name: ec2-linuxprod
+      register: ec2
+    - debug:
+        var: ec2
+    - name: attach elastic ip
+      ec2_eip:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        device_id: "{{ item }}"
+        public_ip: 3.19.145.1
+        ec2_region: "{{ AWS_REGION }}"
+        allow_reassociation: yes
+      loop: "{{ ec2.instance_ids }}"
+    - debug:
+        var: ec2.instances[0]
+    - name: add host to inventory
+      add_host:
+        hostname: 3.19.145.1
+        groupname: jenkinsprod
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+        ansible_ssh_private_key_file: /home/jenkins/jenkins.pem.txt
+      loop: '{{ ec2.instances }}'
+
+- hosts: jenkinsprod
+  gather_facts: no
+  remote_user: ubuntu
+  become: yes
+  tasks:
+    - name: wait for SSH
+      wait_for_connection:
+        delay: 5
+        timeout: 200
+
+    - name: Check host status
+      ping:
+    - name: add ubuntu to sudo group
+      user:
+        name: ubuntu
+        groups: sudo
+        append: yes
+    - name: allow ubuntu passwordless
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%sudo'
+        line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+    - name: update cache
+      apt:
+        update_cache: yes
+    - name: install pass
+      apt:
+        name: pass
+        state: present
+        update_cache: yes
+      ignore_errors: yes
+    - name: install java
+      apt:
+        name: openjdk-8-jdk
+        state: present
+        install_recommends: no
+    - name: install docker
+      apt:
+        name: docker.io
+        state: present
+    - name: enable and start docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+        masked: no
+    - name: add ubuntu to docker group
+      user:
+        name: ubuntu
+        append: yes
+        groups: docker
+    - name: add jenkins user
+      user:
+        name: jenkins
+        append: yes
+        groups: sudo,docker
+    - name: add ssh path
+      file:
+        path: /home/jenkins/.ssh
+        state: directory
+        owner: jenkins
+        group: jenkins
+        mode: 0700
+    - name: add ssh keys
+      copy:
+        src: /home/jenkins/authorized_keys
+        dest: /home/jenkins/.ssh/authorized_keys
+        owner: jenkins
+        group: jenkins
+        mode: 0600
+    - name: add docker path
+      file:
+        path: /home/jenkins/.docker
+        state: directory
+        owner: jenkins
+        group: jenkins
+        mode: 0700
+    - name: add docker cred
+      copy:
+        src: /home/jenkins/config.json
+        dest: /home/jenkins/.docker/config.json
+        owner: jenkins
+        group: jenkins
+        mode: 0600
