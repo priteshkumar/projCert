@@ -192,5 +192,5 @@
     - name: fetch test results
       fetch:
         src: /home/jenkins/workspace/projcert/testresult.gz
-        dest: /var/lib/jenkins/jobs/pipelines/jobs/edureka-project/workspace/
+        dest: /var/lib/jenkins/jobs/pipelines/jobs/projCert/workspace/
         flat: yes
