@@ -120,20 +120,20 @@
   tasks:
     - name: checkout projCert source
       git:
-        repo: https://github.com/priteshkumar/projCert.git
-        dest: /home/jenkins/workspace/projCert
-        version: cm
+        repo: https://github.com/priteshkumar/projcert.git
+        dest: /home/jenkins/workspace/projcert
+        version: master
     - name: get head sha1
       shell: git rev-parse --short HEAD
       args:
-        chdir: /home/jenkins/workspace/projCert
+        chdir: /home/jenkins/workspace/projcert
       register: cmd_output
     - debug:
         var: cmd_output
     - name: build webapp docker image
       docker_image:
         state: present
-        path: /home/jenkins/workspace/projCert
+        path: /home/jenkins/workspace/projcert
         name: mavpks/eduwebapp
         tag: '{{ cmd_output.stdout }}' 
     - name: run webapp docker container
@@ -168,21 +168,21 @@
     - name: set docker imgtag
       shell: echo '{{ cmd_output.stdout }}' >> imgtag.txt
       args:
-        chdir: /home/jenkins/workspace/projCert/tests
+        chdir: /home/jenkins/workspace/projcert/tests
     - name: run selenium tests
       shell: python Seleniumtest.py
       args:
-        chdir: /home/jenkins/workspace/projCert/tests
+        chdir: /home/jenkins/workspace/projcert/tests
       register: testout
     - debug:
         var: testout
     - name: archieve test results
       archive:
         path: 
-          - /home/jenkins/workspace/projCert/tests/*.png
-          - /home/jenkins/workspace/projCert/tests/*.xml
-          - /home/jenkins/workspace/projCert/tests/imgtag.txt
-        dest: /home/jenkins/workspace/projCert/testresult.gz
+          - /home/jenkins/workspace/projcert/tests/*.png
+          - /home/jenkins/workspace/projcert/tests/*.xml
+          - /home/jenkins/workspace/projcert/tests/imgtag.txt
+        dest: /home/jenkins/workspace/projcert/testresult.gz
         format: gz
     - name: push eduwebapp image to docker hub
       docker_image:
@@ -191,6 +191,6 @@
         push: yes
     - name: fetch test results
       fetch:
-        src: /home/jenkins/workspace/projCert/testresult.gz
-        dest: /var/lib/jenkins/jobs/pipelines/jobs/edureka/workspace/
+        src: /home/jenkins/workspace/projcert/testresult.gz
+        dest: /var/lib/jenkins/jobs/pipelines/jobs/edureka-project/workspace/
         flat: yes
