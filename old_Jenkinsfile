@@ -4,26 +4,35 @@ stage('test-deploy'){
         
         cleanWs()
         echo "${WORKSPACE}"
+        echo "test logs add"
         git url:'https://github.com/priteshkumar/projcert.git', branch:'master'      
-        //sh "cp /home/jenkins/ansible/jenkins-test-provision.yml $WORKSPACE/jenkins-test-provision.yml"
-        sh "cp /home/jenkins/ansible/keys.yml $WORKSPACE/ansible/keys.yml"
-        //sh "cp /home/jenkins/ansible/jenkins-test-terminate.yml $WORKSPACE/jenkins-test-terminate.yml"
+        sh "cp /home/jenkins/ansible/jenkins-test-provision.yml $WORKSPACE/jenkins-test-provision.yml"
+        sh "cp /home/jenkins/ansible/keys.yml $WORKSPACE/keys.yml"
+        sh "cp /home/jenkins/ansible/jenkins-test-terminate.yml $WORKSPACE/jenkins-test-terminate.yml"
         sh "ls -als $WORKSPACE"
+        
+        //clean old temp testresults from slave
+        try{
+            sh "rm -rf /home/jenkins/workspace/ec2*"
+        }
+        catch(err){
+            echo "no old ec2-linux-test testresults exist"
+        }
         
         //launch ec2-linux-test slave , build docker image , start webapp , do test
         try{
-            ansiblePlaybook become: true, becomeUser: null, colorized: true, disableHostKeyChecking: true, playbook: '${WORKSPACE}/ansible/jenkins-test-provision.yml', sudoUser: null
+            ansiblePlaybook become: true, becomeUser: null, colorized: true, disableHostKeyChecking: true, playbook: 'jenkins-test-provision.yml', sudoUser: null
         }
         catch(err){
             echo "jenkins test server deploy playbook failed..."
             //try terminating the test slave
-            ansiblePlaybook become: true, becomeUser: null, colorized: true, disableHostKeyChecking: true, playbook: '${WORKSPACE}/ansible/jenkins-test-terminate.yml', sudoUser: null
+            ansiblePlaybook become: true, becomeUser: null, colorized: true, disableHostKeyChecking: true, playbook: 'jenkins-test-terminate.yml', sudoUser: null
             error "playbook execution failed exit"
             
         }
         
         //terminate ondemand ec2 linux test slave
-        ansiblePlaybook become: true, becomeUser: null, colorized: true, disableHostKeyChecking: true, playbook: '${WORKSPACE}/ansible/jenkins-test-terminate.yml', sudoUser: null
+        ansiblePlaybook become: true, becomeUser: null, colorized: true, disableHostKeyChecking: true, playbook: 'jenkins-test-terminate.yml', sudoUser: null
         
         
         try{
