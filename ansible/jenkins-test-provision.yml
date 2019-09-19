@@ -160,9 +160,10 @@
     - debug:
         var: webhome
     - name: install chrome
-      apt: google-chrome-stable
-      state: present
-      update_cache: yes
+      apt:
+        name: google-chrome-stable
+        state: present
+        update_cache: yes
       ignore_errors: yes
       register: chromeout
     - debug:
