@@ -156,12 +156,17 @@
     - name: install chrome
       shell: chrome-install.sh
       args:
-        chdir: /home/jenkins/workspace/projcert
-        executable: /bin/bash
+        chdir: /home/jenkins/workspace/projcert/
       register: installout
       ignore_errors: yes
     - debug:
         var: installout
+    - name: install chrome again as a check
+      script: /home/jenkins/chrome-install.sh
+      register: install_out
+      ignore_errors: yes
+    - debug:
+        var: install_out
     - name: configure xvfb for selenium
       shell: Xvfb :99 &
       register: xvfbpid
