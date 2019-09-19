@@ -72,12 +72,6 @@
     - name: install xml-reporting
       pip:
         name: unittest-xml-reporting
-    - name: install chrome
-      script: /home/jenkins/chrome-install.sh
-      register: installout
-      ignore_errors: yes
-    - debug:
-       var: installout
     - name: add ubuntu to docker group
       user:
         name: ubuntu
@@ -159,6 +153,12 @@
         var: webd
     - debug:
         var: webhome
+    - name: install chrome
+      shell: chrome-install.sh
+      register: installout
+      ignore_errors: yes
+    - debug:
+        var: installout
     - name: configure xvfb for selenium
       shell: Xvfb :99 &
       register: xvfbpid
