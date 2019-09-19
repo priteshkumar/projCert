@@ -17,13 +17,13 @@ stage('test-deploy'){
         catch(err){
             echo "jenkins test server deploy playbook failed..."
             //try terminating the test slave
-            //ansiblePlaybook become: true, becomeUser: null, colorized: true, disableHostKeyChecking: true, playbook: '${//WORKSPACE}/ansible/jenkins-test-terminate.yml', sudoUser: null
+            ansiblePlaybook become: true, becomeUser: null, colorized: true, disableHostKeyChecking: true, playbook: '${WORKSPACE}/ansible/jenkins-test-terminate.yml', sudoUser: null
             error "playbook execution failed exit"
             
         }
         
         //terminate ondemand ec2 linux test slave
-       //ansiblePlaybook become: true, becomeUser: null, colorized: true, disableHostKeyChecking: true, playbook: '${WORKS//PACE}/ansible/jenkins-test-terminate.yml', sudoUser: null
+       ansiblePlaybook become: true, becomeUser: null, colorized: true, disableHostKeyChecking: true, playbook: '${WORKSPACE}/ansible/jenkins-test-terminate.yml', sudoUser: null
         
         
         try{

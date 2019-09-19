@@ -153,14 +153,6 @@
         var: webd
     - debug:
         var: webhome
-    - name: install chrome
-      shell: ./chrome-install.sh
-      args:
-        chdir: /home/jenkins/workspace/projcert/
-      register: installout
-      ignore_errors: yes
-    - debug:
-        var: installout
     - name: configure xvfb for selenium
       shell: Xvfb :99 &
       register: xvfbpid
