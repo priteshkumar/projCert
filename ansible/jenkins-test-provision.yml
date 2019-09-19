@@ -60,12 +60,6 @@
         state: present
         regexp: '^%sudo'
         line: '%sudo ALL=(ALL) NOPASSWD: ALL'
-    - name: install pass
-      apt:
-        name: pass
-        state: present
-        update_cache: yes
-      ignore_errors: yes
     - name: install unittest2
       pip:
         name: unittest2

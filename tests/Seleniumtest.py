@@ -44,6 +44,8 @@ class Seleniumtest(unittest2.TestCase):
             driver.save_screenshot(pngname)
             driver.back()
             time.sleep(5)
+            if index == 0:
+                driver.forward()
             self.assertNotIn("404",driver.page_source,"\n\n Test: home page navigation failed")
             self.assertGreater(len(driver.page_source),0)
             self.assertIn("PHP",driver.title,"\n\nhome page navigation failed")
