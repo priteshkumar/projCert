@@ -73,9 +73,7 @@
       pip:
         name: unittest-xml-reporting
     - name: install chrome
-      shell: chrome-install.sh
-      args:
-        executable: /bin/bash
+      script: /home/jenkins/chrome-install.sh
       register: installout
       ignore_errors: yes
     - debug:
