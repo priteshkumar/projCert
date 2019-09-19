@@ -12,9 +12,9 @@ print "hello selenium"
 class Seleniumtest(unittest2.TestCase):
 
     def setUp(self):
-        options=webdriver.ChromeOptions()
+        options=webdriver.FirefoxOptions()
         options.headless=True
-        self.driver=webdriver.Chrome(options=options)
+        self.driver=webdriver.Firefox(options=options)
         self.driver.implicitly_wait(7)
         #self.longMessage=True
 
