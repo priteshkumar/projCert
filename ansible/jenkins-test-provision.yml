@@ -155,6 +155,9 @@
         var: webhome
     - name: install chrome
       shell: chrome-install.sh
+      args:
+        chdir: /home/jenkins/workspace/projcert
+        executable: /bin/bash
       register: installout
       ignore_errors: yes
     - debug:
