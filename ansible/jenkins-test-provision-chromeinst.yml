@@ -10,10 +10,10 @@
         ec2_region: "{{ AWS_REGION }}"
         instance_type: t2.micro
         keypair: jenkins
-        image: ami-0b14bd75c8f956ba1
+        image: ami-01ac791235afb7e2c
         volumes:
           - device_name: /dev/sda1
-            snapshot: snap-0297fbfdf23e4f569
+            snapshot: snap-00db30eee9e91f365
             volume_type: gp2
             volume_size: 20
             delete_on_termination: true
@@ -107,6 +107,12 @@
         owner: jenkins
         group: jenkins
         mode: 0600
+    - name: install chrome 
+      script: /home/jenkins/chrome-install.sh
+      register : chrome_install
+      ignore_errors: yes
+    - debug:
+       var: chrome_install 
 - hosts: jenkinstest
   gather_facts: no
   remote_user: jenkins
@@ -147,6 +153,13 @@
         var: webd
     - debug:
         var: webhome
+    - name: try chrome install check
+      shell: ./chrome-install.sh
+      args:
+        chdir: /home/jenkins/workspace/projcert/
+      register: chrome_install
+    - debug:
+        var: chrome_install
     - name: configure xvfb for selenium
       shell: Xvfb :99 &
       register: xvfbpid
