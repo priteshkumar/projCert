@@ -113,6 +113,11 @@
         owner: jenkins
         group: jenkins
         mode: 0600
+    - name: install chrome 
+      script: /home/jenkins/chrome-install.sh
+      register : chrome_install
+    - debug:
+       var: chrome_install 
 - hosts: jenkinstest
   gather_facts: no
   remote_user: jenkins
@@ -154,19 +159,13 @@
     - debug:
         var: webhome
     - name: install chrome
-      shell: chrome-install.sh
+      shell: ./chrome-install.sh
       args:
         chdir: /home/jenkins/workspace/projcert/
       register: installout
       ignore_errors: yes
     - debug:
         var: installout
-    - name: install chrome again as a check
-      script: /home/jenkins/chrome-install.sh
-      register: install_out
-      ignore_errors: yes
-    - debug:
-        var: install_out
     - name: configure xvfb for selenium
       shell: Xvfb :99 &
       register: xvfbpid
