@@ -160,15 +160,6 @@
     - debug:
         var: webhome
     - name: install chrome
-      apt:
-        name: google-chrome-stable
-        state: present
-        update_cache: yes
-      ignore_errors: yes
-      register: chromeout
-    - debug:
-        var: chromeout 
-    - name: install chrome
       shell: ./chrome-install.sh
       args:
         chdir: /home/jenkins/workspace/projcert/
