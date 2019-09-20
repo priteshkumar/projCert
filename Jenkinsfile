@@ -4,30 +4,35 @@ stage('test-deploy'){
         
         cleanWs()
         echo "${WORKSPACE}"
-        git url:'https://github.com/priteshkumar/projcert.git', branch:'master'      
-        //sh "cp /home/jenkins/ansible/jenkins-test-provision.yml $WORKSPACE/jenkins-test-provision.yml"
+        git url:'https://github.com/priteshkumar/projcert.git', branch:'master'
         sh "cp /home/jenkins/ansible/keys.yml $WORKSPACE/ansible/keys.yml"
-        //sh "cp /home/jenkins/ansible/jenkins-test-terminate.yml $WORKSPACE/jenkins-test-terminate.yml"
         sh "ls -als $WORKSPACE"
         
         //launch ec2-linux-test slave , build docker image , start webapp , do test
         try{
-            ansiblePlaybook become: true, becomeUser: null, colorized: true, disableHostKeyChecking: true, playbook: '${WORKSPACE}/ansible/jenkins-test-provision.yml', sudoUser: null
+            ansiblePlaybook become: true, becomeUser: null, \
+            colorized: true, disableHostKeyChecking: true, \
+            playbook: '${WORKSPACE}/ansible/jenkins-test-provision.yml', \
+            sudoUser: null
         }
         catch(err){
             echo "jenkins test server deploy playbook failed..."
             //try terminating the test slave
-            ansiblePlaybook become: true, becomeUser: null, colorized: true, disableHostKeyChecking: true, playbook: '${WORKSPACE}/ansible/jenkins-test-terminate.yml', sudoUser: null
+            ansiblePlaybook become: true, becomeUser: null, \
+            colorized: true, disableHostKeyChecking: true, \
+            playbook: '${WORKSPACE}/ansible/jenkins-test-terminate.yml',\
+            sudoUser: null
             error "playbook execution failed exit"
             
         }
         
         //terminate ondemand ec2 linux test slave
-       ansiblePlaybook become: true, becomeUser: null, colorized: true, disableHostKeyChecking: true, playbook: '${WORKSPACE}/ansible/jenkins-test-terminate.yml', sudoUser: null
-        
-        
-        try{
-            
+       ansiblePlaybook become: true, becomeUser: null, \
+       colorized: true, disableHostKeyChecking: true, \
+       playbook: '${WORKSPACE}/ansible/jenkins-test-terminate.yml', \
+       sudoUser: null
+
+       try{
             sh "ls -als"
             sh "tar -xvf testresult.gz"
             sh "ls -als"
@@ -41,20 +46,15 @@ stage('test-deploy'){
             junit 'xmlres/*.xml'
             sh "rm testresult.gz"
             sh "rm *.png"
-            //sh "rm *.xml"
-    
         }
         catch(err){
             echo "testresult archieve failed"
             error "test results dont exist exiting..."
         }
-        
         echo "${params.imgtag}"
-        
     }
-    
-
 }
+
 stage("production-deploy"){
     node('ec2-linuxprod'){
         echo "${params.imgtag}"
