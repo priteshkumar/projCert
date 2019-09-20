@@ -1,0 +1,61 @@
+---
+# tasks file for adding user creds to ec2-linuxtest
+tasks:
+  - name: add ubuntu to sudo group
+    user:
+      name: ubuntu
+      groups: sudo
+      append: yes
+  - name: allow ubuntu passwordless
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^%sudo'
+      line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+  - name: install unittest2
+    pip:
+      name: unittest2
+  - name: install xml-reporting
+    pip:
+      name: unittest-xml-reporting
+  - name: add ubuntu to docker group
+    user:
+      name: ubuntu
+      append: yes
+      groups: docker
+  - name: add jenkins user
+    user:
+      name: jenkins
+      append: yes
+      groups: sudo,docker
+  - name: add ssh path
+    file:
+      path: /home/jenkins/.ssh
+      state: directory
+      owner: jenkins
+      group: jenkins
+      mode: 0700
+    ignore_errors: yes
+  - name: add ssh keys
+    copy:
+      src: /home/jenkins/authorized_keys
+      dest: /home/jenkins/.ssh/authorized_keys
+      force: yes
+      owner: jenkins
+      group: jenkins
+      mode: 0600
+  - name: add docker path
+    file:
+      path: /home/jenkins/.docker
+      state: directory
+      owner: jenkins
+      group: jenkins
+      mode: 0700
+  - name: add docker cred
+    copy:
+      src: /home/jenkins/config.json
+      dest: /home/jenkins/.docker/config.json
+      force: yes
+      owner: jenkins
+      group: jenkins
+      mode: 0600

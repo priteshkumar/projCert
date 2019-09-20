@@ -10,10 +10,10 @@
         ec2_region: "{{ AWS_REGION }}"
         instance_type: t2.micro
         keypair: jenkins
-        image: ami-01ac791235afb7e2c
+        image: ami-0b14bd75c8f956ba1
         volumes:
           - device_name: /dev/sda1
-            snapshot: snap-00db30eee9e91f365
+            snapshot: snap-0297fbfdf23e4f569
             volume_type: gp2
             volume_size: 20
             delete_on_termination: true
@@ -60,12 +60,6 @@
         state: present
         regexp: '^%sudo'
         line: '%sudo ALL=(ALL) NOPASSWD: ALL'
-    - name: install pass
-      apt:
-        name: pass
-        state: present
-        update_cache: yes
-      ignore_errors: yes
     - name: install unittest2
       pip:
         name: unittest2
