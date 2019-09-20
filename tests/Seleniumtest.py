@@ -19,7 +19,7 @@ class Seleniumtest(unittest2.TestCase):
         #self.longMessage=True
 
 
-    def test_edureka_webapp(self):
+    def test_edureka_webapp_homepage(self):
         driver=self.driver
         #driver.get("http:mavixk1c.mylabserver.com:3000")
         driver.get("http:localhost:3000")
@@ -29,8 +29,14 @@ class Seleniumtest(unittest2.TestCase):
         driver.save_screenshot("apphome.png")
         navmenu=driver.find_element_by_xpath("//nav[@class='menu']")
         self.assertIsNotNone(navmenu,"\n\n Test : navigation menu load error..test failed")
-        navlinks=navmenu.find_elements_by_tag_name("a")
-        totalinks=len(navlinks)
+
+    def test_edureka_webapp_menu(self):
+        driver=self.driver
+        driver.get("http:localhost:3000")
+        navmenu = driver.find_element_by_xpath("//nav[@class='menu']")
+        self.assertIsNotNone(navmenu, "\n\n Test : navigation menu load error..test failed")
+        navlinks = navmenu.find_elements_by_tag_name("a")
+        totalinks = len(navlinks)
 
         for index in range(totalinks):
             pngname = str(navlinks[index].text) + ".png"
