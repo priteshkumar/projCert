@@ -52,7 +52,7 @@
 
     - name: include user creds role
       include_role:
-        - roles/testprovision
+        name: testprovision
 
 - hosts: jenkinstest
   gather_facts: no
@@ -61,4 +61,4 @@
   tasks:
     - name: include testrun role
       include_role:
-        - roles/testrun
+        name: testrun
