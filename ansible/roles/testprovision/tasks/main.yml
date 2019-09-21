@@ -17,6 +17,9 @@
 - name: install xml-reporting
   pip:
     name: unittest-xml-reporting
+- name: install lxml
+  pip:
+    name: lxml
 - name: add ubuntu to docker group
   user:
     name: ubuntu
