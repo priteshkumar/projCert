@@ -47,6 +47,7 @@ stage('test-deploy'){
             sh "rm testresult.gz"
             sh "rm *.png"
             def teststatus=sh label: '', returnStdout: true, script: 'cat teststatus.txt'
+            echo "Teststatus is : ${teststatus}"
             if (teststatus == "failed"){
                 echo "exiting production deployment ... tests failed"
                 error "exiting testcases failed"
