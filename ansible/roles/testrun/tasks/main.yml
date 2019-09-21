@@ -58,14 +58,21 @@
   register: testout
 - debug:
     var: testout
+- include_tasks: dumpresults.yml
 - name: archieve test results
   archive:
     path:
       - /home/jenkins/workspace/projcert/tests/*.png
       - /home/jenkins/workspace/projcert/tests/*.xml
       - /home/jenkins/workspace/projcert/tests/imgtag.txt
+      - /home/jenkins/workspace/projcert/tests/teststatus.txt
     dest: /home/jenkins/workspace/projcert/testresult.gz
     format: gz
+- name: check test status
+  shell: cat /home/jenkins/workspace/projcert/tests/teststatus.txt
+  register: teststatus
+- debug:
+    var: teststatus
 - name: push eduwebapp image to docker hub
   docker_image:
     name: mavpks/eduwebapp

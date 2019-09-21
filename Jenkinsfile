@@ -46,6 +46,11 @@ stage('test-deploy'){
             junit 'xmlres/*.xml'
             sh "rm testresult.gz"
             sh "rm *.png"
+            def teststatus=sh label: '', returnStdout: true, script: 'cat teststatus.txt'
+            if (teststatus == "failed"){
+                echo "exiting production deployment ... tests failed"
+                error "exiting testcases failed"
+            }
         }
         catch(err){
             echo "testresult archieve failed"

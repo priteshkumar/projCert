@@ -1,0 +1,27 @@
+- name: parse xml
+  xml:
+    path: /home/jenkins/workspace/projcert/tests/seleniumresults.xml
+    xpath: /testsuites/testsuite
+    content: attribute
+  register: xml_output
+- debug:
+    var: xml_output.matches[0].testsuite
+- name: create test output
+  lineinfile:
+    path: /home/jenkins/workspace/projcert/tests/teststatus.txt
+    create: yes
+    state: present
+    line: "passed"
+- name: create result file
+  lineinfile:
+    path: /home/jenkins/workspace/projcert/tests/teststatus.txt
+    create: yes
+    state: present
+    regexp: '^passed'
+    line: "failed"
+  when: xml_output.matches[0].testsuite.failures != "0" or xml_output.matches[0].testsuite.errors != "0"
+
+
+    
+        
+
