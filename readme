@@ -1,4 +1,9 @@
-jenkins master instance project url is :
+Notes:
+jenkins master/slave instances are using aws ec2.
 
+jenkins master instance project url is :
 http://ec2-18-219-51-19.us-east-2.compute.amazonaws.com:8080/job/pipelines/job/projCert/
+
+jenkins production server url is :
+http://ec2-3-19-145-1.us-east-2.compute.amazonaws.com:3000
 
